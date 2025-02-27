@@ -1,11 +1,14 @@
 package logsnag
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 type LogSnag struct {
@@ -17,54 +20,53 @@ func (logsnag *LogSnag) GetProject() string {
 	return logsnag.Project
 }
 
-func (logsnag *LogSnag) Publish(channel string, event string, icon string, tags map[string]any, notify bool) bool {
-	url := "https://api.logsnag.com/v1/log"
-	method := "POST"
+type PublishRequest struct {
+	Project     string            `json:"project,omitempty"`
+	Channel     string            `json:"channel,omitempty"`
+	Event       string            `json:"event,omitempty"`
+	Description string            `json:"description,omitempty"`
+	Icon        string            `json:"icon,omitempty"`
+	Notify      bool              `json:"notify,omitempty"`
+	Tags        map[string]string `json:"tags,omitempty"`
+	Parser      string            `json:"parser,omitempty"`
+	UserID      string            `json:"user_id,omitempty"`
+	Timestamp   int64             `json:"timestamp,omitempty"`
+}
 
-	// Create the description string from map
-	var pairs []string
-	for key, value := range tags {
-		pairs = append(pairs, fmt.Sprintf(`%s: %v`, key, value))
+func (logsnag *LogSnag) Publish(input *PublishRequest) error {
+	if input.Project == "" || input.Channel == "" || input.Event == "" {
+		return errors.New("logsnag: LogSnag.Publish missing one of required fields project, channel, or event")
 	}
 
-	description := strings.Join(pairs, ", ")
+	baseURL := "https://api.logsnag.com/v1/log"
 
-	payload := strings.NewReader(`{
-		"project": "` + logsnag.GetProject() + `",
-		"channel": "` + channel + `",
-		"event": "` + event + `",
-		"description": "` + description + `",
-		"icon": "` + icon + `",
-		"notify": "` + strconv.FormatBool(notify) + `"
-	}`)
+	body, err := json.Marshal(input)
+	if err != nil {
+		return errors.Wrap("logsnag: LogSnag.Publish json.Marshal error")
+	}
 
-	client := &http.Client{}
-	req, err := http.NewRequest(method, url, payload)
+	req, err := http.NewRequest(http.MethodPost, baseURL, bytes.NewReader(body))
 
 	if err != nil {
-		fmt.Println(err)
-		return false
+		return errors.Wrap("logsnag: LogSnag.Publish http.NewRequest error")
 	}
 
 	req.Header.Add("Authorization", "Bearer "+logsnag.Token)
 	req.Header.Add("Content-Type", "application/json")
 
-	res, err := client.Do(req)
+	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		fmt.Println(err)
-		return false
-	}
-	defer res.Body.Close()
-
-	_, err = ioutil.ReadAll(res.Body)
-	if err != nil {
-		fmt.Println(err)
-		return false
+		return errors.Wrap("logsnag: LogSnag.Publish http.DefaultClient.Do error")
 	}
 
-	return true
+	if res.StatusCode != http.StatusOK || res.StatusCode != http.StatusCreated {
+		return fmt.Errorf("logsnag: LogSnag.Publish unexpected http response status <%d> error", res.StatusCode)
+	}
+
+	return nil
 }
 
+// TODO: mofify me when need insight
 func (logsnag *LogSnag) Insight(title string, value string, icon string) bool {
 	url := "https://api.logsnag.com/v1/insight"
 	method := "POST"
