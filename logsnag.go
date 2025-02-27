@@ -35,7 +35,7 @@ type PublishRequest struct {
 
 func (logsnag *LogSnag) Publish(input *PublishRequest) error {
 	if input.Channel == "" || input.Event == "" {
-		return errors.New("logsnag: LogSnag.Publish missing one of required fields project, channel, or event")
+		return errors.New("logsnag: LogSnag.Publish missing one of required fields channel, or event")
 	}
 	input.Project = logsnag.GetProject()
 
