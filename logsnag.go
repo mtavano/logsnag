@@ -59,8 +59,11 @@ func (logsnag *LogSnag) Publish(input *PublishRequest) error {
 	if err != nil {
 		return errors.Wrap(err, "logsnag: LogSnag.Publish http.DefaultClient.Do error")
 	}
+	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK || res.StatusCode != http.StatusCreated {
+		b, _ := io.ReadAll(res.Body)
+		fmt.Println("body response error: ", string(b))
 		return fmt.Errorf("logsnag: LogSnag.Publish unexpected http response status <%d> error", res.StatusCode)
 	}
 
