@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 
@@ -34,9 +34,10 @@ type PublishRequest struct {
 }
 
 func (logsnag *LogSnag) Publish(input *PublishRequest) error {
-	if input.Project == "" || input.Channel == "" || input.Event == "" {
+	if input.Channel == "" || input.Event == "" {
 		return errors.New("logsnag: LogSnag.Publish missing one of required fields project, channel, or event")
 	}
+	input.Project = logsnag.GetProject()
 
 	baseURL := "https://api.logsnag.com/v1/log"
 
@@ -95,7 +96,7 @@ func (logsnag *LogSnag) Insight(title string, value string, icon string) bool {
 	}
 	defer res.Body.Close()
 
-	_, err = ioutil.ReadAll(res.Body)
+	_, err = io.ReadAll(res.Body)
 	if err != nil {
 		fmt.Println(err)
 		return false
