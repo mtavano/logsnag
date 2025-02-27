@@ -42,13 +42,13 @@ func (logsnag *LogSnag) Publish(input *PublishRequest) error {
 
 	body, err := json.Marshal(input)
 	if err != nil {
-		return errors.Wrap("logsnag: LogSnag.Publish json.Marshal error")
+		return errors.Wrap(err, "logsnag: LogSnag.Publish json.Marshal error")
 	}
 
 	req, err := http.NewRequest(http.MethodPost, baseURL, bytes.NewReader(body))
 
 	if err != nil {
-		return errors.Wrap("logsnag: LogSnag.Publish http.NewRequest error")
+		return errors.Wrap(err, "logsnag: LogSnag.Publish http.NewRequest error")
 	}
 
 	req.Header.Add("Authorization", "Bearer "+logsnag.Token)
@@ -56,7 +56,7 @@ func (logsnag *LogSnag) Publish(input *PublishRequest) error {
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return errors.Wrap("logsnag: LogSnag.Publish http.DefaultClient.Do error")
+		return errors.Wrap(err, "logsnag: LogSnag.Publish http.DefaultClient.Do error")
 	}
 
 	if res.StatusCode != http.StatusOK || res.StatusCode != http.StatusCreated {
