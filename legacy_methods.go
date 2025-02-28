@@ -88,6 +88,7 @@ func (logsnag *LogSnag) PublishLegacy(
 	}
 
 	bearerToken := "Bearer " + logsnag.Token
+	fmt.Printf("TOKEN: <%s>\n", bearerToken)
 	req.Header.Add("Authorization", bearerToken)
 	req.Header.Add("Content-Type", "application/json")
 
