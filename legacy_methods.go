@@ -73,9 +73,6 @@ func (logsnag *LogSnag) PublishLegacy(
 		"icon": "` + icon + `",
 		"notify": "` + strconv.FormatBool(notify) + `"
 	}`
-	fmt.Println("--------")
-	fmt.Println(rawPayload)
-	fmt.Println("--------")
 
 	payload := strings.NewReader(rawPayload)
 
