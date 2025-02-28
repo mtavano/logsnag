@@ -45,6 +45,10 @@ func (logsnag *LogSnag) Publish(input *PublishRequest) error {
 		return errors.Wrap(err, "logsnag: LogSnag.Publish json.Marshal error")
 	}
 
+	fmt.Println("=======")
+	fmt.Println(string(body))
+	fmt.Println("=======")
+
 	req, err := http.NewRequest(http.MethodPost, baseURL, bytes.NewReader(body))
 
 	if err != nil {
