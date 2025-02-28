@@ -27,9 +27,6 @@ type PublishRequest struct {
 	Icon        string            `json:"icon,omitempty"`
 	Notify      bool              `json:"notify,omitempty"`
 	Tags        map[string]string `json:"tags,omitempty"`
-	Parser      string            `json:"parser,omitempty"`
-	UserID      string            `json:"user_id,omitempty"`
-	Timestamp   int64             `json:"timestamp,omitempty"`
 }
 
 func (logsnag *LogSnag) Publish(input *PublishRequest) error {
@@ -44,10 +41,6 @@ func (logsnag *LogSnag) Publish(input *PublishRequest) error {
 	if err != nil {
 		return errors.Wrap(err, "logsnag: LogSnag.Publish json.Marshal error")
 	}
-
-	fmt.Println("=======")
-	fmt.Println(string(body))
-	fmt.Println("=======")
 
 	req, err := http.NewRequest(http.MethodPost, baseURL, bytes.NewReader(body))
 
