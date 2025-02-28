@@ -48,10 +48,8 @@ func (logsnag *LogSnag) Publish(input *PublishRequest) error {
 		return errors.Wrap(err, "logsnag: LogSnag.Publish http.NewRequest error")
 	}
 
-	req.Header.Add(
-		"Authorization",
-		fmt.Sprintf("Bearer %s", logsnag.Token),
-	)
+	bearerToken := "Bearer " + logsnag.Token
+	req.Header.Add("Authorization", bearerToken)
 	req.Header.Add("Content-Type", "application/json")
 
 	res, err := http.DefaultClient.Do(req)

@@ -87,7 +87,8 @@ func (logsnag *LogSnag) PublishLegacy(
 		return false
 	}
 
-	req.Header.Add("Authorization", "Bearer "+logsnag.Token)
+	bearerToken := "Bearer " + logsnag.Token
+	req.Header.Add("Authorization", bearerToken)
 	req.Header.Add("Content-Type", "application/json")
 
 	res, err := client.Do(req)
