@@ -20,13 +20,13 @@ func (logsnag *LogSnag) GetProject() string {
 }
 
 type PublishRequest struct {
-	Project     string            `json:"project,omitempty"`
-	Channel     string            `json:"channel,omitempty"`
-	Event       string            `json:"event,omitempty"`
-	Description string            `json:"description,omitempty"`
-	Icon        string            `json:"icon,omitempty"`
-	Notify      bool              `json:"notify,omitempty"`
-	Tags        map[string]string `json:"tags,omitempty"`
+	Project     string         `json:"project,omitempty"`
+	Channel     string         `json:"channel,omitempty"`
+	Event       string         `json:"event,omitempty"`
+	Description string         `json:"description,omitempty"`
+	Icon        string         `json:"icon,omitempty"`
+	Notify      bool           `json:"notify,omitempty"`
+	Tags        map[string]any `json:"tags,omitempty"`
 }
 
 func (logsnag *LogSnag) Publish(input *PublishRequest) error {
