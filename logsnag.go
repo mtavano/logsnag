@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 
 	"github.com/pkg/errors"
 )
@@ -36,6 +37,10 @@ func (logsnag *LogSnag) Publish(input *PublishRequest) error {
 	input.Project = logsnag.GetProject()
 
 	baseURL := "https://api.logsnag.com/v1/log"
+	overrideURL := os.Getenv("OVERRIDE_LOGSNAG_URL")
+	if overrideURL != "" {
+		baseURL = overrideURL
+	}
 
 	body, err := json.Marshal(input)
 	if err != nil {
